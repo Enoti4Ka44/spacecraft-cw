@@ -10,13 +10,23 @@ const Header = () => {
         </Link>
       </Button>
       <Button asChild>
-        <Link className="px-4 py-2" href={`/resoures`}>
+        <Link className="px-4 py-2" href={`/resources`}>
           Ресурсы
         </Link>
       </Button>
       <Button asChild>
-        <Link className="px-4 py-2" href={`/resoures-types`}>
+        <Link className="px-4 py-2" href={`/resources-types`}>
           Типы ресурсов
+        </Link>
+      </Button>
+      <Button asChild>
+        <Link className="px-4 py-2" href={`/resources-logs`}>
+          Логи ресурсов
+        </Link>
+      </Button>
+      <Button asChild>
+        <Link className="px-4 py-2" href={`/missions`}>
+          Миссии
         </Link>
       </Button>
       <Button asChild>
@@ -25,18 +35,13 @@ const Header = () => {
         </Link>
       </Button>
       <Button asChild>
-        <Link className="px-4 py-2" href={`/experiments`}>
-          Экперименты
-        </Link>
-      </Button>
-      <Button asChild>
         <Link className="px-4 py-2" href={`/crew-members`}>
           Участники команды
         </Link>
       </Button>
       <Button asChild>
-        <Link className="px-4 py-2" href={`/resources-logs`}>
-          Логи ресурсов
+        <Link className="px-4 py-2" href={`/experiments`}>
+          Экперименты
         </Link>
       </Button>
     </header>

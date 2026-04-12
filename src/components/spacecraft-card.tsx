@@ -12,7 +12,7 @@ import {
 import { Spacecraft } from "@/types/spacecraft";
 import { Pencil } from "lucide-react";
 import DeleteButton from "./delete-button";
-import { spacecraftService } from "@/services/spacecraft";
+import { spacecraftService } from "@/services/service-spacecraft";
 
 type SpacecraftCardProps = {
   data: Spacecraft;

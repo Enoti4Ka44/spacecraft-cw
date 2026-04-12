@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { spacecraftService } from "@/services/service-spacecraft";
-import { Spacecraft } from "@/types/spacecraft";
+import { experimentService } from "@/services/service-experiment";
+import { experiment } from "@/types/experiment";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,18 +18,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Plus, Edit2, Trash2, MapPin } from "lucide-react";
-import { SpacecraftForm } from "@/components/space-craft-form";
-import { missionService } from "@/services/service-mission";
+import { Plus, Edit2, Trash2, FlaskConical } from "lucide-react";
+import { ExperimentForm } from "@/components/experiment-form";
 
-export default function SpacecraftsPage() {
-  const [spacecrafts, setSpacecrafts] = useState<Spacecraft[]>([]);
+export default function ExperimentsPage() {
+  const [experiments, setExperiments] = useState<experiment[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<Spacecraft | null>(null);
+  const [editingItem, setEditingItem] = useState<experiment | null>(null);
 
   const loadData = async () => {
-    const data = await spacecraftService.getAll();
-    setSpacecrafts(data);
+    const data = await experimentService.getAll();
+    setExperiments(data);
   };
 
   useEffect(() => {
@@ -40,29 +39,26 @@ export default function SpacecraftsPage() {
     setEditingItem(null);
     setIsModalOpen(true);
   };
-
-  const handleEdit = (item: Spacecraft) => {
+  const handleEdit = (item: experiment) => {
     setEditingItem(item);
     setIsModalOpen(true);
   };
 
   const handleDelete = async (id: number) => {
-    if (confirm("Вы уверены, что хотите удалить этот корабль?")) {
-      await spacecraftService.delete(id);
+    if (confirm("Удалить этот эксперимент?")) {
+      await experimentService.delete(id);
       loadData();
     }
   };
 
-  console.log(spacecrafts);
-
   const onSubmit = async (formData: any) => {
     if (editingItem) {
-      await spacecraftService.put(editingItem.id, {
+      await experimentService.put(editingItem.id, {
         ...formData,
         id: editingItem.id,
       });
     } else {
-      await spacecraftService.post(formData);
+      await experimentService.post(formData);
     }
     setIsModalOpen(false);
     loadData();
@@ -72,56 +68,54 @@ export default function SpacecraftsPage() {
     <div className="px-5 py-10 space-y-8">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Космические корабли
-          </h1>
-          <p className="text-muted-foreground">Управление флотом экспедиции</p>
+          <h1 className="text-3xl font-bold tracking-tight">Эксперименты</h1>
+          <p className="text-muted-foreground">Научные исследования миссий</p>
         </div>
         <Button onClick={handleCreate} className="gap-2">
-          <Plus className="w-4 h-4" /> Создать корабль
+          <Plus className="w-4 h-4" /> Добавить эксперимент
         </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {spacecrafts.map((ship) => (
-          <Card key={ship.id} className="flex flex-col">
+        {experiments.map((exp) => (
+          <Card key={exp.id} className="flex flex-col">
             <CardHeader>
               <div className="flex justify-between items-start">
-                <CardTitle>{ship.name}</CardTitle>
+                <CardTitle>{exp.name}</CardTitle>
                 <span
                   className={`px-2 py-1 rounded text-xs font-medium ${
-                    ship.spacecraftStatus === "IN_MISSION"
+                    exp.experimentStatus === "COMPLETED"
                       ? "bg-green-100 text-green-700"
-                      : ship.spacecraftStatus === "MAINTENANCE"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : "bg-slate-100 text-slate-700"
+                      : exp.experimentStatus === "FAILED"
+                        ? "bg-red-100 text-red-700"
+                        : "bg-blue-100 text-blue-700"
                   }`}
                 >
-                  {ship.spacecraftStatus}
+                  {exp.experimentStatus}
                 </span>
               </div>
-              <CardDescription>{ship.model}</CardDescription>
+              <CardDescription>Миссия ID: {exp.missionId}</CardDescription>
             </CardHeader>
             <CardContent className="flex-1">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <MapPin className="w-4 h-4" />
-                {ship.currentLocation}
+                <FlaskConical className="w-4 h-4" /> Ответственный ID:{" "}
+                {exp.responsibleMemberId}
               </div>
-              <p className="mt-4 text-sm line-clamp-2">{ship.specifications}</p>
+              <p className="mt-4 text-sm line-clamp-2">{exp.description}</p>
             </CardContent>
             <CardFooter className="border-t pt-4 flex gap-2">
               <Button
                 variant="default"
                 size="sm"
                 className="flex-1 gap-2"
-                onClick={() => handleEdit(ship)}
+                onClick={() => handleEdit(exp)}
               >
                 <Edit2 className="w-3 h-3" /> Редактировать
               </Button>
               <Button
                 variant="destructive"
                 size="sm"
-                onClick={() => handleDelete(ship.id)}
+                onClick={() => handleDelete(exp.id)}
               >
                 <Trash2 className="w-3 h-3" />
               </Button>
@@ -134,10 +128,10 @@ export default function SpacecraftsPage() {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>
-              {editingItem ? "Редактировать корабль" : "Создать новый корабль"}
+              {editingItem ? "Редактировать" : "Создать"}
             </DialogTitle>
           </DialogHeader>
-          <SpacecraftForm
+          <ExperimentForm
             initialData={editingItem}
             onSubmit={onSubmit}
             onCancel={() => setIsModalOpen(false)}
