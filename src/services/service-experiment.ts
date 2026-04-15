@@ -1,9 +1,17 @@
 import { experiment } from "@/types/experiment";
 import { BASE_URL } from ".";
+import { createQueryString } from "@/lib/api-utils";
 
 export const experimentService = {
-  getAll: async (): Promise<experiment[]> => {
-    const response = await fetch(`${BASE_URL}/experiments`);
+  getAll: async (params?: {
+    search?: string;
+    missionId?: number;
+    status?: string;
+    responsibleMemberId?: number;
+  }): Promise<experiment[]> => {
+    const response = await fetch(
+      `${BASE_URL}/experiments${createQueryString(params)}`,
+    );
     return response.json();
   },
 

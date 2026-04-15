@@ -1,9 +1,16 @@
 import { Mission } from "@/types/mission";
 import { BASE_URL } from ".";
+import { createQueryString } from "@/lib/api-utils";
 
 export const missionService = {
-  getAll: async (): Promise<Mission[]> => {
-    const response = await fetch(`${BASE_URL}/missions`);
+  getAll: async (params?: {
+    search?: string;
+    spacecraftId?: number;
+    missionStatus?: string;
+  }): Promise<Mission[]> => {
+    const response = await fetch(
+      `${BASE_URL}/missions${createQueryString(params)}`,
+    );
     return response.json();
   },
 

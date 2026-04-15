@@ -115,7 +115,7 @@ export default function SpacecraftsPage() {
           </div>
         </div>
 
-        <div className="grid w-full max-w-[200px] items-center gap-1.5">
+        <div className="grid items-center gap-1.5">
           <label className="text-sm font-medium">Статус</label>
           <Select
             value={filters.status}

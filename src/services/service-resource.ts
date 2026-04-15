@@ -1,9 +1,16 @@
 import { Resource } from "@/types/resource";
 import { BASE_URL } from ".";
+import { createQueryString } from "@/lib/api-utils";
 
 export const resourceService = {
-  getAll: async (): Promise<Resource[]> => {
-    const response = await fetch(`${BASE_URL}/resources`);
+  getAll: async (params?: {
+    maxCurrentQuantity?: number;
+    resourceTypeId?: number;
+    spacecraftId?: number;
+  }): Promise<Resource[]> => {
+    const response = await fetch(
+      `${BASE_URL}/resources${createQueryString(params)}`,
+    );
     return response.json();
   },
 
