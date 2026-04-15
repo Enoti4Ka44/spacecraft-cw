@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toLongDate } from "@/lib/date-formatter";
 
 export function MissionMemberForm({
   onSubmit,
@@ -15,14 +16,16 @@ export function MissionMemberForm({
   const [formData, setFormData] = useState({
     memberId: 0,
     roleInMission: "",
-    joinDate: new Date().toISOString().split("T")[0],
+    joinDate: new Date().toISOString().slice(0, 16),
   });
-
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        onSubmit(formData);
+        onSubmit({
+          ...formData,
+          joinDate: toLongDate(formData.joinDate),
+        });
       }}
       className="space-y-4 pt-4"
     >
@@ -54,7 +57,7 @@ export function MissionMemberForm({
         <Label htmlFor="date">Дата вступления</Label>
         <Input
           id="date"
-          type="date"
+          type="datetime-local"
           value={formData.joinDate}
           onChange={(e) =>
             setFormData({ ...formData, joinDate: e.target.value })

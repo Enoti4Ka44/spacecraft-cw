@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { fromLongDate, toLongDate } from "@/lib/date-formatter";
 
 interface Props {
   initialData?: experiment | null;
@@ -35,12 +36,8 @@ export function ExperimentForm({ initialData, onSubmit, onCancel }: Props) {
     if (initialData) {
       setFormData({
         ...initialData,
-        startTime: initialData.startTime
-          ? String(initialData.startTime).split("T")[0]
-          : "",
-        endTime: initialData.endTime
-          ? String(initialData.endTime).split("T")[0]
-          : "",
+        startTime: fromLongDate(String(initialData.startTime)),
+        endTime: fromLongDate(String(initialData.endTime)),
       });
     }
   }, [initialData]);
@@ -51,6 +48,8 @@ export function ExperimentForm({ initialData, onSubmit, onCancel }: Props) {
       ...formData,
       missionId: Number(formData.missionId),
       responsibleMemberId: Number(formData.responsibleMemberId),
+      startTime: toLongDate(formData.startTime),
+      endTime: toLongDate(formData.endTime),
     });
   };
 
@@ -110,7 +109,7 @@ export function ExperimentForm({ initialData, onSubmit, onCancel }: Props) {
           <Label htmlFor="startTime">Дата начала</Label>
           <Input
             id="startTime"
-            type="date"
+            type="datetime-local"
             value={formData.startTime}
             onChange={(e) =>
               setFormData({ ...formData, startTime: e.target.value })
@@ -122,7 +121,7 @@ export function ExperimentForm({ initialData, onSubmit, onCancel }: Props) {
           <Label htmlFor="endTime">Дата окончания</Label>
           <Input
             id="endTime"
-            type="date"
+            type="datetime-local"
             value={formData.endTime}
             onChange={(e) =>
               setFormData({ ...formData, endTime: e.target.value })

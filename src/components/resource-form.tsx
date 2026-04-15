@@ -5,6 +5,7 @@ import { Resource } from "@/types/resource";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getNowLongDate } from "@/lib/date-formatter";
 
 interface Props {
   initialData?: Resource | null;
@@ -41,7 +42,7 @@ export function ResourceForm({ initialData, onSubmit, onCancel }: Props) {
       resourceTypeId: Number(formData.resourceTypeId),
       currentQuantity: Number(formData.currentQuantity),
       maxCapacity: Number(formData.maxCapacity),
-      lastUpdated: new Date().toISOString(), // Обновляем дату при сохранении
+      lastUpdated: getNowLongDate(),
     });
   };
 

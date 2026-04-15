@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { fromLongDate, toLongDate } from "@/lib/date-formatter";
 
 interface Props {
   initialData?: Mission | null;
@@ -33,21 +34,19 @@ export function MissionForm({ initialData, onSubmit, onCancel }: Props) {
     if (initialData) {
       setFormData({
         ...initialData,
-        startDate: initialData.startDate
-          ? String(initialData.startDate).split("T")[0]
-          : "",
-        endDate: initialData.endDate
-          ? String(initialData.endDate).split("T")[0]
-          : "",
+        startDate: fromLongDate(String(initialData.startDate)),
+        endDate: fromLongDate(String(initialData.endDate)),
       });
     }
   }, [initialData]);
 
-  const handleSubmit = (e: React.SubmitEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit({
       ...formData,
       spacecraftId: Number(formData.spacecraftId),
+      startDate: toLongDate(formData.startDate),
+      endDate: toLongDate(formData.endDate),
     });
   };
 
@@ -79,7 +78,7 @@ export function MissionForm({ initialData, onSubmit, onCancel }: Props) {
           <Label htmlFor="startDate">Дата начала</Label>
           <Input
             id="startDate"
-            type="date"
+            type="datetime-local"
             value={formData.startDate}
             onChange={(e) =>
               setFormData({ ...formData, startDate: e.target.value })
@@ -91,7 +90,7 @@ export function MissionForm({ initialData, onSubmit, onCancel }: Props) {
           <Label htmlFor="endDate">Дата окончания</Label>
           <Input
             id="endDate"
-            type="date"
+            type="datetime-local"
             value={formData.endDate}
             onChange={(e) =>
               setFormData({ ...formData, endDate: e.target.value })

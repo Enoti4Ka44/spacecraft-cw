@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { fromShortDate, toShortDate } from "@/lib/date-formatter";
 
 interface Props {
   initialData?: CrewMember | null;
@@ -32,16 +33,17 @@ export function CrewMemberForm({ initialData, onSubmit, onCancel }: Props) {
     if (initialData) {
       setFormData({
         ...initialData,
-        birthDate: initialData.birthDate
-          ? initialData.birthDate.split("T")[0]
-          : "",
+        birthDate: fromShortDate(String(initialData.birthDate)),
       });
     }
   }, [initialData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit({
+      ...formData,
+      birthDate: toShortDate(formData.birthDate),
+    });
   };
 
   return (

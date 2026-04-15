@@ -53,11 +53,10 @@ export default function ResourceTypesPage() {
   };
 
   return (
-    <div className="px-5 py-10 space-y-8 max-w-4xl mx-auto">
+    <div className="px-5 py-10 space-y-8">
       <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Типы ресурсов</h1>
-        </div>
+        <h1 className="text-3xl font-bold tracking-tight">Типы ресурсов</h1>
+
         <Button onClick={handleCreate} className="gap-2">
           <Plus className="w-4 h-4" /> Добавить тип
         </Button>

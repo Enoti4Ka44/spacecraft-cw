@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { fromShortDate, toShortDate } from "@/lib/date-formatter";
 
 interface Props {
   initialData?: Spacecraft | null;
@@ -33,15 +34,17 @@ export function SpacecraftForm({ initialData, onSubmit, onCancel }: Props) {
     if (initialData) {
       setFormData({
         ...initialData,
-        // Обрезаем дату до формата YYYY-MM-DD для input type="date"
-        launchDate: initialData.launchDate.split("T")[0],
+        launchDate: fromShortDate(String(initialData.launchDate)),
       });
     }
   }, [initialData]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.SubmitEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit({
+      ...formData,
+      launchDate: toShortDate(formData.launchDate),
+    });
   };
 
   return (

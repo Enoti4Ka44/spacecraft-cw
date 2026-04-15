@@ -1,10 +1,14 @@
-import { Spacecraft } from "@/types/spacecraft";
+import { Spacecraft, spacecraftStatusMAP } from "@/types/spacecraft";
 import { BASE_URL } from ".";
+import { createQueryString } from "@/lib/api-utils";
 
 export const spacecraftService = {
-  getAll: async (): Promise<Spacecraft[]> => {
-    const response = await fetch(`${BASE_URL}/spacecrafts`);
-
+  getAll: async (
+    params: { status?: spacecraftStatusMAP; search?: string } = {},
+  ): Promise<Spacecraft[]> => {
+    const response = await fetch(
+      `${BASE_URL}/spacecrafts${createQueryString(params)}`,
+    );
     return response.json();
   },
 
