@@ -16,6 +16,7 @@ interface Props {
 export function ResourceForm({ initialData, onSubmit, onCancel }: Props) {
   const [formData, setFormData] = useState({
     spacecraftId: 0,
+    name: "",
     resourceTypeId: 0,
     currentQuantity: 0,
     maxCapacity: 0,
@@ -26,6 +27,7 @@ export function ResourceForm({ initialData, onSubmit, onCancel }: Props) {
     if (initialData) {
       setFormData({
         spacecraftId: initialData.spacecraftId,
+        name: initialData.name,
         resourceTypeId: initialData.resourceTypeId,
         currentQuantity: initialData.currentQuantity,
         maxCapacity: initialData.maxCapacity,
@@ -34,7 +36,7 @@ export function ResourceForm({ initialData, onSubmit, onCancel }: Props) {
     }
   }, [initialData]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.SubmitEvent) => {
     e.preventDefault();
     onSubmit({
       ...formData,
@@ -46,9 +48,21 @@ export function ResourceForm({ initialData, onSubmit, onCancel }: Props) {
     });
   };
 
+  console.log(formData);
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4 pt-4">
       <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-2 col-span-2">
+          <Label htmlFor="name">Название</Label>
+          <Input
+            id="name"
+            type="text"
+            value={formData.name || ""}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            required
+          />
+        </div>
         <div className="grid gap-2">
           <Label htmlFor="spacecraftId">ID Корабля</Label>
           <Input

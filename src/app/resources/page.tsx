@@ -1,14 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { resourceService } from "@/services/service-resource";
+import { resourceTypeService } from "@/services/service-resource-type";
+import { spacecraftService } from "@/services/service-spacecraft";
 import { Resource, ResourceType } from "@/types/resource";
+import { Spacecraft } from "@/types/spacecraft";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Card,
-  CardContent,
   CardHeader,
   CardTitle,
+  CardContent,
   CardFooter,
 } from "@/components/ui/card";
 import {
@@ -17,28 +28,21 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Plus, Edit2, Trash2, Package, X } from "lucide-react";
+import { Plus, Edit2, Trash2, X, Package, ArrowUpDown } from "lucide-react";
 import { ResourceForm } from "@/components/resource-form";
-import { resourceTypeService } from "@/services/service-resource-type";
-import { spacecraftService } from "@/services/service-spacecraft";
-import { Spacecraft } from "@/types/spacecraft";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+import { ResourceQuantityForm } from "@/components/resource-quantity-form";
 
 export default function ResourcesPage() {
   const [resources, setResources] = useState<Resource[]>([]);
   const [types, setTypes] = useState<ResourceType[]>([]);
   const [spacecrafts, setSpacecrafts] = useState<Spacecraft[]>([]);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Resource | null>(null);
 
-  // Фильтры
+  const [isPatchModalOpen, setIsPatchModalOpen] = useState(false);
+  const [patchingItem, setPatchingItem] = useState<Resource | null>(null);
+
   const [filters, setFilters] = useState({
     maxCurrentQuantity: "",
     resourceTypeId: "all",
@@ -50,7 +54,7 @@ export default function ResourcesPage() {
     spacecraftService.getAll().then(setSpacecrafts);
   }, []);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     const params: any = {};
     if (filters.maxCurrentQuantity)
       params.maxCurrentQuantity = Number(filters.maxCurrentQuantity);
@@ -60,11 +64,12 @@ export default function ResourcesPage() {
       params.spacecraftId = Number(filters.spacecraftId);
 
     setResources(await resourceService.getAll(params));
-  };
+  }, [filters]);
 
   useEffect(() => {
-    loadData();
-  }, [filters]);
+    const timer = setTimeout(() => loadData(), 400);
+    return () => clearTimeout(timer);
+  }, [filters, loadData]);
 
   const clearFilters = () =>
     setFilters({
@@ -101,8 +106,21 @@ export default function ResourcesPage() {
     loadData();
   };
 
+  const handlePatchOpen = (item: Resource) => {
+    setPatchingItem(item);
+    setIsPatchModalOpen(true);
+  };
+
+  const handlePatchSubmit = async (quantityChange: string) => {
+    if (patchingItem) {
+      await resourceService.patchQuantity(patchingItem.id, quantityChange);
+      setIsPatchModalOpen(false);
+      loadData();
+    }
+  };
+
   return (
-    <div className="px-5 py-10 space-y-8">
+    <div className="px-5 py-10 space-y-4">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Ресурсы</h1>
@@ -176,8 +194,11 @@ export default function ResourcesPage() {
           <Card key={res.id}>
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2 text-lg">
-                <Package className="w-5 h-5 text-muted-foreground" /> Тип:{" "}
-                {res.resourceTypeId}
+                {res.name || "Без названия"}
+                <span className="text-sm font-normal text-muted-foreground ml-auto">
+                  <Package className="w-4 h-4 inline mr-1" /> ID:{" "}
+                  {res.resourceTypeId}
+                </span>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -191,11 +212,18 @@ export default function ResourcesPage() {
                 </span>
               </div>
             </CardContent>
-            <CardFooter className="border-t pt-4 flex gap-2">
+            <CardFooter className="border-t pt-4 flex gap-2 flex-wrap">
               <Button
-                variant="default"
+                variant="outline"
                 size="sm"
-                className="flex-1"
+                className="w-full gap-2 cursor-pointer"
+                onClick={() => handlePatchOpen(res)}
+              >
+                <ArrowUpDown className="w-3 h-3" /> Изменить кол-во
+              </Button>
+              <Button
+                size="sm"
+                className="flex-1 cursor-pointer"
                 onClick={() => handleEdit(res)}
               >
                 <Edit2 className="w-3 h-3" /> Редактировать
@@ -203,6 +231,7 @@ export default function ResourcesPage() {
               <Button
                 variant="destructive"
                 size="sm"
+                className="cursor-pointer"
                 onClick={() => handleDelete(res.id)}
               >
                 <Trash2 className="w-3 h-3" />
@@ -216,7 +245,7 @@ export default function ResourcesPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editingItem ? "Редактировать" : "Создать"}
+              {editingItem ? "Редактировать ресурс" : "Новый ресурс"}
             </DialogTitle>
           </DialogHeader>
           <ResourceForm
@@ -224,6 +253,21 @@ export default function ResourcesPage() {
             onSubmit={onSubmit}
             onCancel={() => setIsModalOpen(false)}
           />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isPatchModalOpen} onOpenChange={setIsPatchModalOpen}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Расход / Пополнение ресурса</DialogTitle>
+          </DialogHeader>
+          {patchingItem && (
+            <ResourceQuantityForm
+              resource={patchingItem}
+              onSubmit={handlePatchSubmit}
+              onCancel={() => setIsPatchModalOpen(false)}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>

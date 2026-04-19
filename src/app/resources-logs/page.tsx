@@ -11,7 +11,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { History, ArrowUpRight, ArrowDownLeft } from "lucide-react";
+import {
+  History,
+  ArrowUpRight,
+  ArrowDownLeft,
+  Caravan,
+  Package,
+} from "lucide-react";
 
 export default function ResourceLogsPage() {
   const [logs, setLogs] = useState<RosourceLog[]>([]);
@@ -43,32 +49,38 @@ export default function ResourceLogsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {logs
-              .sort((a, b) => b.id - a.id)
-              .map((log) => (
-                <TableRow key={log.id}>
-                  <TableCell className="font-mono text-xs">{log.id}</TableCell>
-                  <TableCell>
-                    {new Date(log.timestamp).toLocaleString("ru-RU")}
-                  </TableCell>
-                  <TableCell>🛸 {log.spacecraftId}</TableCell>
-                  <TableCell>📦 {log.resourceId}</TableCell>
-                  <TableCell className="text-right">
-                    <span
-                      className={`inline-flex items-center font-bold ${log.quantityChange > 0 ? "text-green-600" : "text-red-600"}`}
-                    >
-                      {log.quantityChange > 0 ? (
-                        <ArrowUpRight className="w-4 h-4 mr-1" />
-                      ) : (
-                        <ArrowDownLeft className="w-4 h-4 mr-1" />
-                      )}
-                      {log.quantityChange > 0
-                        ? `+${log.quantityChange}`
-                        : log.quantityChange}
-                    </span>
-                  </TableCell>
-                </TableRow>
-              ))}
+            {logs.map((log) => (
+              <TableRow key={log.id}>
+                <TableCell className="font-mono text-xs">{log.id}</TableCell>
+                <TableCell>{log.timestamp}</TableCell>
+                <TableCell>
+                  <span className="flex gap-1 items-center ">
+                    <Caravan className="w-4 h-4 text-muted-foreground" />{" "}
+                    {log.spacecraftId}
+                  </span>
+                </TableCell>
+                <TableCell className="flex gap-1 items-center">
+                  <span className="flex gap-1 items-center ">
+                    <Package className="w-4 h-4 text-muted-foreground" />
+                    {log.resourceId}
+                  </span>
+                </TableCell>
+                <TableCell className="text-right">
+                  <span
+                    className={`inline-flex items-center font-bold ${log.quantityChange > 0 ? "text-green-600" : "text-red-600"}`}
+                  >
+                    {log.quantityChange > 0 ? (
+                      <ArrowUpRight className="w-4 h-4 mr-1" />
+                    ) : (
+                      <ArrowDownLeft className="w-4 h-4 mr-1" />
+                    )}
+                    {log.quantityChange > 0
+                      ? `+${log.quantityChange}`
+                      : log.quantityChange}
+                  </span>
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </div>

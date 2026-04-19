@@ -44,12 +44,12 @@ export const resourceService = {
     return response;
   },
 
-  patchQuantity: async (id: number, quantity: number) => {
+  patchQuantity: async (id: number, quantityChange: string) => {
+    console.log(quantityChange);
     const response = await fetch(`${BASE_URL}/resources/${id}/quantity`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      // В зависимости от бэкенда, тут может передаваться либо просто число, либо объект
-      body: JSON.stringify({ quantity }),
+      body: JSON.stringify({ quantityChange: quantityChange }),
     });
     return response;
   },
